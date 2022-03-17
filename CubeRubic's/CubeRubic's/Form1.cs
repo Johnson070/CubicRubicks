@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SharpGL;
 using CubeRubic_s;
+using static CubeRubic_s.CubeWork;
 
 namespace CubeRubic_s
 {
@@ -18,24 +19,24 @@ namespace CubeRubic_s
         float rotation = 0.0f;
         float rotation_cube = 0;
         float rotation_const = 4.5f;
+        OpenGL gl;
         CubeWork cube;
-
-        void RotateCubic(CubeWork.RotateType rt)
-        {
-            
-        }
+        CameraClass camera = new CameraClass();
+        ModelCube mc;
 
         public Form1()
         {
             InitializeComponent();
+            this.MouseWheel += new MouseEventHandler(openGLControl1_MouseMove);
             cube = new CubeWork();
+
+            mc = new ModelCube();
+            mc.SetColorsMatrix(cube.Cube);
         }
 
-        float rotateOne = 0;
-        CubeWork.RotateType rt = CubeWork.RotateType.Right;
         private void openGLControl1_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
         {
-            OpenGL gl = openGLControl1.OpenGL;
+            gl = openGLControl1.OpenGL;
 
             //  Очищаем буфер цвета и глубины
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
@@ -45,7 +46,7 @@ namespace CubeRubic_s
 
             //  Указываем оси вращения (x, y, z)
             //
-            gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
+            //gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
 
             gl.Begin(OpenGL.GL_LINE_STRIP);
             gl.LineWidth(2);
@@ -70,7 +71,7 @@ namespace CubeRubic_s
 
             //cube.RotateCube(CubeWork.RotateType.Front,false, rotation_const);
 
-            DrawRubic(gl);
+            DrawRubic();
 
             // рисуем землю            
             //gl.Begin(OpenGL.GL_POLYGON);
@@ -84,7 +85,7 @@ namespace CubeRubic_s
             rotation += 0.5f; // угол разворота за 1 кадр
         }
 
-        void DrawRubic(OpenGL gl)
+        void DrawRubic()
         { 
             for (int i = 0; i < cube.Cube.Length; i++)
             {
@@ -100,27 +101,26 @@ namespace CubeRubic_s
                         //gl.Vertex(cube.Cube[i][j][k].pos);
                         //gl.End();
                         // up
-                        //gl.Begin(OpenGL.GL_QUADS);
-                        //gl.Color(cube.Cube[i][j][k].ColorUp.GetFroatColor());
-                        //gl.Vertex(cube.Cube[i][j][k].posPoint[0][0]);
-                        //gl.Vertex(cube.Cube[i][j][k].posPoint[0][1]);
-                        //gl.Vertex(cube.Cube[i][j][k].posPoint[0][2]);
-                        //gl.Vertex(cube.Cube[i][j][k].posPoint[0][3]);
-                        //gl.End();
+                        gl.Begin(OpenGL.GL_QUADS);
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Up.GetFroatColor());
+                        gl.Vertex(cube.Cube[i][j][k].posPoint[0][0]);
+                        gl.Vertex(cube.Cube[i][j][k].posPoint[0][1]);
+                        gl.Vertex(cube.Cube[i][j][k].posPoint[0][2]);
+                        gl.Vertex(cube.Cube[i][j][k].posPoint[0][3]);
+                        gl.End();
 
                         //down
                         gl.Begin(OpenGL.GL_QUADS);
-                        gl.Color(cube.Cube[i][j][k].ColorDown.GetFroatColor());
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Down.GetFroatColor());
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][0]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][1]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][2]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][3]);
                         gl.End();
 
-
                         //Right
                         gl.Begin(OpenGL.GL_QUADS);
-                        gl.Color(cube.Cube[i][j][k].ColorRight.GetFroatColor());
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Right.GetFroatColor());
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][0]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][1]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[0][1]);
@@ -129,7 +129,7 @@ namespace CubeRubic_s
 
                         //left
                         gl.Begin(OpenGL.GL_QUADS);
-                        gl.Color(cube.Cube[i][j][k].ColorLeft.GetFroatColor());
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Left.GetFroatColor());
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][2]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][3]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[0][3]);
@@ -138,7 +138,7 @@ namespace CubeRubic_s
 
                         //front
                         gl.Begin(OpenGL.GL_QUADS);
-                        gl.Color(cube.Cube[i][j][k].ColorFront.GetFroatColor());
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Front.GetFroatColor());
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][1]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][2]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[0][2]);
@@ -147,7 +147,7 @@ namespace CubeRubic_s
 
                         //back
                         gl.Begin(OpenGL.GL_QUADS);
-                        gl.Color(cube.Cube[i][j][k].ColorBack.GetFroatColor());
+                        gl.Color(cube.Cube[i][j][k].ColorSides3D.Back.GetFroatColor());
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][0]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[1][3]);
                         gl.Vertex(cube.Cube[i][j][k].posPoint[0][3]);
@@ -188,48 +188,90 @@ namespace CubeRubic_s
             gl.Perspective(60.0f, (double)Width / (double)Height, 0.01, 100.0);
 
             //  Данная функция позволяет установить камеру и её положение
-            gl.LookAt(6, 6, -6,    // Позиция самой камеры (x, y, z)
-                        0, 1, 0,     // Направление, куда мы смотрим
+            gl.LookAt(camera.x, camera.y, camera.z,    // Позиция самой камеры (x, y, z)
+                        camera.c_x, camera.c_y, camera.c_z,     // Направление, куда мы смотрим
                         0, 1, 0);    // Верх камеры
 
             //  Зададим модель отображения
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
         }
 
-        private void openGLControl1_Load(object sender, EventArgs e)
+        private void RotateBtnClick(object sender, EventArgs e)
         {
+            if (((Button)sender).Tag.ToString() == "0") cube.RotateCube(CubeWork.RotateType.Up);
+            if (((Button)sender).Tag.ToString() == "1") cube.RotateCube(CubeWork.RotateType.Down);
+            if (((Button)sender).Tag.ToString() == "2") cube.RotateCube(CubeWork.RotateType.Left);
+            if (((Button)sender).Tag.ToString() == "3") cube.RotateCube(CubeWork.RotateType.Right);
+            if (((Button)sender).Tag.ToString() == "4") cube.RotateCube(CubeWork.RotateType.Front);
+            if (((Button)sender).Tag.ToString() == "5") cube.RotateCube(CubeWork.RotateType.Back);
 
+            mc.SetColorsMatrix(cube.Cube);
+            var x = mc.ColoredCube[(int)RotateType.Up];
+            Console.WriteLine($"" +
+                $"{x[0,0]} {x[0, 1]} {x[0, 2]}\n" +
+                $"{x[1, 0]} {x[1, 1]} {x[1, 2]}\n" +
+                $"{x[2, 0]} {x[2, 1]} {x[2, 2]}\n");
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        bool mouseHold = false;
+        float xMouse, yMouse;
+        private void openGLControl1_MouseDown(object sender, MouseEventArgs e)
         {
-            cube.RotateCube(CubeWork.RotateType.Up);
+            if (e.Button == MouseButtons.Left)
+            {
+                mouseHold = true;
+                xMouse = e.X;
+                yMouse = e.Y;
+            }
+        }
+
+        private void openGLControl1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Delta != 0)
+            {
+                camera.coords = camera.coords.SetRadiusCamera(-e.Delta/120.0f);
+                openGLControl1_Resized(null, null);
+            }
+            if (mouseHold)
+            {
+                float absX = e.X - xMouse;
+                float absY = e.Y - yMouse;
+
+                camera.coords = camera.coords.RotateXZ(absX/2);
+                camera.coords = camera.coords.RotateXY(absY/2);
+
+                xMouse = e.X;
+                yMouse = e.Y;
+
+                openGLControl1_Resized(null, null);
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < 20; i++)
+            {
+                cube.RotateCube((CubeWork.RotateType)rnd.Next(0,6));
+            }
+            mc.SetColorsMatrix(cube.Cube);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            SolveCube cb = new SolveCube();
+            var a = cb.SolveStep(mc.ColoredCube);
+
+            foreach (var step in a)
+            {
+                cube.RotateCube(step);
+            }
             
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void openGLControl1_MouseUp(object sender, MouseEventArgs e)
         {
-            cube.RotateCube(CubeWork.RotateType.Down);
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            cube.RotateCube(CubeWork.RotateType.Left);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            cube.RotateCube(CubeWork.RotateType.Right);
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            cube.RotateCube(CubeWork.RotateType.Front);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            cube.RotateCube(CubeWork.RotateType.Back);
+            mouseHold = false;
         }
     }
 }
