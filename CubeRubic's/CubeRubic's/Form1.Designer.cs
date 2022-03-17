@@ -93,7 +93,7 @@ namespace CubeRubic_s
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(105, 23);
             this.button3.TabIndex = 4;
-            this.button3.Tag = "3";
+            this.button3.Tag = "2";
             this.button3.Text = "RIGHT";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.RotateBtnClick);
@@ -105,7 +105,7 @@ namespace CubeRubic_s
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(105, 23);
             this.button4.TabIndex = 3;
-            this.button4.Tag = "2";
+            this.button4.Tag = "3";
             this.button4.Text = "LEFT";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.RotateBtnClick);
@@ -172,8 +172,10 @@ namespace CubeRubic_s
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.openGLControl1);
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl1)).EndInit();
             this.ResumeLayout(false);
 

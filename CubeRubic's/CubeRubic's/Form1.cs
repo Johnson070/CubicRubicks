@@ -19,6 +19,8 @@ namespace CubeRubic_s
         float rotation = 0.0f;
         float rotation_cube = 0;
         float rotation_const = 4.5f;
+
+        bool reverse = false;
         OpenGL gl;
         CubeWork cube;
         CameraClass camera = new CameraClass();
@@ -198,12 +200,14 @@ namespace CubeRubic_s
 
         private void RotateBtnClick(object sender, EventArgs e)
         {
-            if (((Button)sender).Tag.ToString() == "0") cube.RotateCube(CubeWork.RotateType.Up);
-            if (((Button)sender).Tag.ToString() == "1") cube.RotateCube(CubeWork.RotateType.Down);
-            if (((Button)sender).Tag.ToString() == "2") cube.RotateCube(CubeWork.RotateType.Left);
-            if (((Button)sender).Tag.ToString() == "3") cube.RotateCube(CubeWork.RotateType.Right);
-            if (((Button)sender).Tag.ToString() == "4") cube.RotateCube(CubeWork.RotateType.Front);
-            if (((Button)sender).Tag.ToString() == "5") cube.RotateCube(CubeWork.RotateType.Back);
+            //if (((Button)sender).Tag.ToString() == "0") cube.RotateCube(CubeWork.RotateType.Up | CubeWork.RotateType.reverse);
+            //if (((Button)sender).Tag.ToString() == "1") cube.RotateCube(CubeWork.RotateType.Down);
+            //if (((Button)sender).Tag.ToString() == "2") cube.RotateCube(CubeWork.RotateType.Left);
+            //if (((Button)sender).Tag.ToString() == "3") cube.RotateCube(CubeWork.RotateType.Right);
+            //if (((Button)sender).Tag.ToString() == "4") cube.RotateCube(CubeWork.RotateType.Front);
+            //if (((Button)sender).Tag.ToString() == "5")
+
+            cube.RotateCube((RotateType)(Convert.ToInt32((((Button)sender).Tag)) << 1 | (reverse ? 0b1 : 0b0)));
 
             mc.SetColorsMatrix(cube.Cube);
             var x = mc.ColoredCube[(int)RotateType.Up];
@@ -267,6 +271,22 @@ namespace CubeRubic_s
                 cube.RotateCube(step);
             }
             
+        }
+
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 'c')
+            {
+                reverse = !reverse;
+                
+            }
+
+            button1.Text = reverse ? button1.Text + '\'' : button1.Text.Replace("\'", string.Empty);
+            button2.Text = reverse ? button2.Text + '\'' : button2.Text.Replace("\'", string.Empty);
+            button3.Text = reverse ? button3.Text + '\'' : button3.Text.Replace("\'", string.Empty);
+            button4.Text = reverse ? button4.Text + '\'' : button4.Text.Replace("\'", string.Empty);
+            button5.Text = reverse ? button5.Text + '\'' : button5.Text.Replace("\'", string.Empty);
+            button6.Text = reverse ? button6.Text + '\'' : button6.Text.Replace("\'", string.Empty);
         }
 
         private void openGLControl1_MouseUp(object sender, MouseEventArgs e)

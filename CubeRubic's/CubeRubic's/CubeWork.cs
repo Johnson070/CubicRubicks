@@ -23,7 +23,9 @@ namespace CubeRubic_s
             Right_ = Right | 0b000_1,
             Left_ = Left | 0b000_1,
             Front_ = Front | 0b000_1,
-            Back_ = Back | 0b000_1
+            Back_ = Back | 0b000_1,
+
+            reverse = 0b000_1
         }
 
         public SubCubeRubic[][][] Cube = new SubCubeRubic[][][]
