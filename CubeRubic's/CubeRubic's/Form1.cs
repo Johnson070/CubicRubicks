@@ -16,11 +16,11 @@ namespace CubeRubic_s
     public partial class Form1 : Form
     {
         //static float sizeSubCube = 1.0f;
-        float rotation = 0.0f;
-        float rotation_cube = 0;
-        float rotation_const = 4.5f;
+        float rotation = 3f;
+        float rotation_step = 0;
 
         bool reverse = false;
+        List<RotateType> queue = new List<RotateType>();
         OpenGL gl;
         CubeWork cube;
         CameraClass camera = new CameraClass();
@@ -39,15 +39,9 @@ namespace CubeRubic_s
         private void openGLControl1_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
         {
             gl = openGLControl1.OpenGL;
-
-            //  Очищаем буфер цвета и глубины
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-            //  Загружаем единичную матрицу
             gl.LoadIdentity();
 
-            //  Указываем оси вращения (x, y, z)
-            //
             //gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
 
             gl.Begin(OpenGL.GL_LINE_STRIP);
@@ -71,6 +65,34 @@ namespace CubeRubic_s
             gl.Vertex(0, 0, 10);
             gl.End();
 
+            if (queue.Count != 0)
+            {
+                cube.RotateCube(queue[0], rotation);
+                rotation_step += rotation;
+
+                if (rotation_step + rotation == 90.0f)
+                {
+                    cube.RotateCube(queue[0], rotation, true);
+                    mc.SetColorsMatrix(cube.Cube);
+                    queue.RemoveAt(0);
+                    rotation_step = 0;
+
+                    //var x = mc.ColoredCube[(int)RotateType.Back >> 1];
+                    //Console.WriteLine($"" +
+                    //    $"{x[0, 0]} {x[0, 1]} {x[0, 2]}\n" +
+                    //    $"{x[1, 0]} {x[1, 1]} {x[1, 2]}\n" +
+                    //    $"{x[2, 0]} {x[2, 1]} {x[2, 2]}\n");
+
+                    if (queue.Count == 0)
+                        rotation = 3f;
+                }
+
+                for (int i = 0; i < cube.Cube.Length; i++)
+                    for (int j = 0; j < cube.Cube[i].Length; j++)
+                        for (int k = 0; k < cube.Cube[i][j].Length; k++)
+                            if (cube.Cube[i][j][k] != null)
+                                cube.Cube[i][j][k].pos = new float[] { (float)Math.Round(cube.Cube[i][j][k].pos[0],0), (float)Math.Round(cube.Cube[i][j][k].pos[1], 0), (float)Math.Round(cube.Cube[i][j][k].pos[2], 0) };
+            }
             //cube.RotateCube(CubeWork.RotateType.Front,false, rotation_const);
 
             DrawRubic();
@@ -83,8 +105,6 @@ namespace CubeRubic_s
             //gl.Vertex(10f, -3f, 10f);
             //gl.Vertex(-10f, -3f, 10f);
             //gl.End();
-
-            rotation += 0.5f; // угол разворота за 1 кадр
         }
 
         void DrawRubic()
@@ -207,14 +227,9 @@ namespace CubeRubic_s
             //if (((Button)sender).Tag.ToString() == "4") cube.RotateCube(CubeWork.RotateType.Front);
             //if (((Button)sender).Tag.ToString() == "5")
 
-            cube.RotateCube((RotateType)(Convert.ToInt32((((Button)sender).Tag)) << 1 | (reverse ? 0b1 : 0b0)));
+            queue.Add((RotateType)(Convert.ToInt32((((Button)sender).Tag)) << 1 | (reverse ? 0b1 : 0b0)));
 
-            mc.SetColorsMatrix(cube.Cube);
-            var x = mc.ColoredCube[(int)RotateType.Up];
-            Console.WriteLine($"" +
-                $"{x[0,0]} {x[0, 1]} {x[0, 2]}\n" +
-                $"{x[1, 0]} {x[1, 1]} {x[1, 2]}\n" +
-                $"{x[2, 0]} {x[2, 1]} {x[2, 2]}\n");
+            
         }
 
         bool mouseHold = false;
@@ -254,11 +269,12 @@ namespace CubeRubic_s
         private void button7_Click(object sender, EventArgs e)
         {
             Random rnd = new Random();
-            for (int i = 0; i < 20; i++)
+            rotation = 10f;
+            for (int i = 0; i < 50; i++)
             {
-                cube.RotateCube((CubeWork.RotateType)rnd.Next(0,6));
+                queue.Add((CubeWork.RotateType)rnd.Next(0, 12));
             }
-            mc.SetColorsMatrix(cube.Cube);
+            //mc.SetColorsMatrix(cube.Cube);
         }
 
         private void button8_Click(object sender, EventArgs e)
@@ -268,9 +284,9 @@ namespace CubeRubic_s
 
             foreach (var step in a)
             {
-                cube.RotateCube(step);
+                queue.Add(step);
             }
-            
+            //mc.SetColorsMatrix(cube.Cube);
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -287,6 +303,9 @@ namespace CubeRubic_s
             button4.Text = reverse ? button4.Text + '\'' : button4.Text.Replace("\'", string.Empty);
             button5.Text = reverse ? button5.Text + '\'' : button5.Text.Replace("\'", string.Empty);
             button6.Text = reverse ? button6.Text + '\'' : button6.Text.Replace("\'", string.Empty);
+            button9.Text = reverse ? button9.Text + '\'' : button9.Text.Replace("\'", string.Empty);
+            button10.Text = reverse ? button10.Text + '\'' : button10.Text.Replace("\'", string.Empty);
+            button11.Text = reverse ? button11.Text + '\'' : button11.Text.Replace("\'", string.Empty);
         }
 
         private void openGLControl1_MouseUp(object sender, MouseEventArgs e)

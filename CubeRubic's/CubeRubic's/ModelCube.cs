@@ -47,6 +47,8 @@ namespace CubeRubic_s
             back = new ColorsCube[3,3];
         }
 
+
+
         public void SetColorsMatrix(SubCubeRubic[][][] Cube)
         {
             foreach (var slice in Cube)
@@ -58,22 +60,22 @@ namespace CubeRubic_s
                         //for (int i = 0; i < subCube.posPoint.Length; i++)
                         //    for (int j = 0; j < subCube.posPoint[i].Length; j++)
                         //    {
-                                if (subCube.pos[2] == -SubCubeRubic.sizeSubCube) // right
+                                if (subCube.pos[2].CheckCeilPos(-SubCubeRubic.sizeSubCube)) // right
                                     right[1 - (int)subCube.pos[1],1 - (int)subCube.pos[0]] = subCube.ColorSidesMap.Right;
 
-                                if (subCube.pos[2] == SubCubeRubic.sizeSubCube) //left
+                                if (subCube.pos[2].CheckCeilPos(SubCubeRubic.sizeSubCube)) //left
                                     left[1 - (int)subCube.pos[1], 1 + (int)subCube.pos[0]] = subCube.ColorSidesMap.Left;
 
-                                if (subCube.pos[1] == SubCubeRubic.sizeSubCube) //UP
+                                if (subCube.pos[1].CheckCeilPos(SubCubeRubic.sizeSubCube)) //UP
                                     up[1 + (int)subCube.pos[0],1 - (int)subCube.pos[2]] = subCube.ColorSidesMap.Up;
 
-                                if (subCube.pos[1] == -SubCubeRubic.sizeSubCube) //down
+                                if (subCube.pos[1].CheckCeilPos(-SubCubeRubic.sizeSubCube)) //down
                                     down[1 + (int)subCube.pos[0], 1 - (int)subCube.pos[2]] = subCube.ColorSidesMap.Down;
 
-                                if (subCube.pos[0] == SubCubeRubic.sizeSubCube) //Front
+                                if (subCube.pos[0].CheckCeilPos(SubCubeRubic.sizeSubCube)) //Front
                                     front[1 - (int)subCube.pos[1],1 - (int)subCube.pos[2]] = subCube.ColorSidesMap.Front;
 
-                                if (subCube.pos[0] == -SubCubeRubic.sizeSubCube) //back
+                                if (subCube.pos[0].CheckCeilPos(-SubCubeRubic.sizeSubCube)) //back
                                     back[1 - (int)subCube.pos[1],1 - (int)subCube.pos[2]] = subCube.ColorSidesMap.Back;
                            //}
 

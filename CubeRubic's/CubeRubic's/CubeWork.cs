@@ -11,21 +11,28 @@ namespace CubeRubic_s
         public const float sizeSubCube = 1.0f;
         public enum RotateType : int
         {
-            Up = 0b000_0,
-            Down = 0b001_0,
-            Right = 0b010_0,
-            Left = 0b011_0,
-            Front = 0b100_0,
-            Back = 0b101_0,
+            Up =    0b0000_0,
+            Down =  0b0001_0,
+            Right = 0b0010_0,
+            Left =  0b0011_0,
+            Front = 0b0100_0,
+            Back =  0b0101_0,
+            x = 0b0110_0,
+            y = 0b0111_0,
+            z = 0b1000_0,
 
-            Up_ = Up | 0b000_1,
-            Down_ = Down | 0b000_1,
-            Right_ = Right | 0b000_1,
-            Left_ = Left | 0b000_1,
-            Front_ = Front | 0b000_1,
-            Back_ = Back | 0b000_1,
+            Up_ =       Up | reverse,
+            Down_ =     Down | reverse,
+            Right_ =    Right | reverse,
+            Left_ =     Left | reverse,
+            Front_ =    Front | reverse,
+            Back_ =     Back | reverse,
+            x_ = x | reverse,
+            y_ = y | reverse,
+            z_ = z | reverse,
 
-            reverse = 0b000_1
+            reverse = 0b0000_1,
+            non_reverse
         }
 
         public SubCubeRubic[][][] Cube = new SubCubeRubic[][][]
@@ -177,12 +184,14 @@ namespace CubeRubic_s
             //Cube[0][0][0].FillColor(System.Drawing.Color.Purple);
         }
 
-        public void RotateCube(RotateType rt, bool reverse = false, float angle = 90)
+        public void RotateCube(RotateType rt, float angle = 90, bool rotatePos = false)
         {
-            if (((byte)rt & 0b0001) == 0b1)
+            bool reverse = false;
+
+            if (((byte)rt & 0b0000_1) == 0b1)
             {
                 reverse = true;
-                rt = (RotateType)((byte)rt & 0b1110);
+                rt = (RotateType)((byte)rt & 0b1111_0);
             }
 
             foreach (var slice in Cube)
@@ -194,56 +203,81 @@ namespace CubeRubic_s
                         for (int i = 0; i < subCube.posPoint.Length; i++)
                             for (int j = 0; j < subCube.posPoint[i].Length; j++)
                             {
-                                if (rt == RotateType.Right && subCube.pos[2] == -sizeSubCube)
+                                if (rt == RotateType.Right && subCube.pos[2].CheckCeilPos(-sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXY(angle * (reverse ? -1 : 1));
 
-                                if (rt == RotateType.Left && subCube.pos[2] == sizeSubCube)
+                                if (rt == RotateType.Left && subCube.pos[2].CheckCeilPos(sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXY(angle * (!reverse ? -1 : 1));
 
-                                if (rt == RotateType.Up && subCube.pos[1] == sizeSubCube)
+                                if (rt == RotateType.Up && subCube.pos[1].CheckCeilPos(sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXZ(angle * (reverse ? -1 : 1));
 
-                                if (rt == RotateType.Down && subCube.pos[1] == -sizeSubCube)
+                                if (rt == RotateType.Down && subCube.pos[1].CheckCeilPos(-sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXZ(angle * (!reverse ? -1 : 1));
 
-                                if (rt == RotateType.Front && subCube.pos[0] == sizeSubCube)
+                                if (rt == RotateType.Front && subCube.pos[0].CheckCeilPos(sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateYZ(angle * (!reverse ? -1 : 1));
 
-                                if (rt == RotateType.Back && subCube.pos[0] == -sizeSubCube)
+                                if (rt == RotateType.Back && subCube.pos[0].CheckCeilPos(-sizeSubCube))
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateYZ(angle * (reverse ? -1 : 1));
+
+                                if (rt == RotateType.x)
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXY(angle * (reverse ? -1 : 1));
+                                if (rt == RotateType.y)
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXZ(angle * (reverse ? -1 : 1));
+                                if (rt == RotateType.z)
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateYZ(angle * (!reverse ? -1 : 1));
                             }
 
-                        if (rt == RotateType.Right && subCube.pos[2] == -sizeSubCube)
+                        if (rotatePos)
                         {
-                            subCube.pos = subCube.pos.RotateXY(angle * (reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(reverse);
-                        }
+                            if (rt == RotateType.Right && subCube.pos[2].CheckCeilPos(-sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateXY(90f * (reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(reverse);
+                            }
 
-                        if (rt == RotateType.Left && subCube.pos[2] == sizeSubCube)
-                        {
-                            subCube.pos = subCube.pos.RotateXY(angle * (!reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(!reverse);
-                        }
+                            if (rt == RotateType.Left && subCube.pos[2].CheckCeilPos(sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateXY(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(!reverse);
+                            }
 
-                        if (rt == RotateType.Up && subCube.pos[1] == sizeSubCube)
-                        {
-                            subCube.pos = subCube.pos.RotateXZ(angle * (reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(reverse);
-                        }
-                        if (rt == RotateType.Down && subCube.pos[1] == -sizeSubCube)
-                        {
-                            subCube.pos = subCube.pos.RotateXZ(angle * (!reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(!reverse);
-                        }
-                        if (rt == RotateType.Front && subCube.pos[0] == sizeSubCube)
-                        {
-                            subCube.pos = subCube.pos.RotateYZ(angle * (!reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(reverse);
-                        }
-                        if (rt == RotateType.Back && subCube.pos[0] == -sizeSubCube)
-                        {
-                            subCube.pos = subCube.pos.RotateYZ(angle * (reverse ? -1 : 1));
-                            subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(!reverse);
+                            if (rt == RotateType.Up && subCube.pos[1].CheckCeilPos(sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateXZ(90f * (reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(reverse);
+                            }
+                            if (rt == RotateType.Down && subCube.pos[1].CheckCeilPos(-sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateXZ(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(!reverse);
+                            }
+                            if (rt == RotateType.Front && subCube.pos[0].CheckCeilPos(sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateYZ(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(reverse);
+                            }
+                            if (rt == RotateType.Back && subCube.pos[0].CheckCeilPos(-sizeSubCube))
+                            {
+                                subCube.pos = subCube.pos.RotateYZ(90f * (reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(!reverse);
+                            }
+                            if (rt == RotateType.x)
+                            {
+                                subCube.pos = subCube.pos.RotateXY(90f * (reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(reverse);
+                            }
+                            if (rt == RotateType.y)
+                            {
+                                subCube.pos = subCube.pos.RotateXZ(90f * (reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(reverse);
+                            }
+                            if (rt == RotateType.z)
+                            {
+                                subCube.pos = subCube.pos.RotateYZ(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(reverse);
+                            }
                         }
                     }
 

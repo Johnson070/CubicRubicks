@@ -250,25 +250,29 @@ namespace CubeRubic_s
             double angle0 = Math.Asin((y0 / R));
             //if (angle0 < 0) angle0 += Math.PI * 2.0f;
             if (x0 < 0) angle0 = Math.PI - angle0;
-            float x = (float)Math.Round(Convert.ToSingle(Math.Cos((angle * Math.PI) / 180f + angle0) * R),4);
-            float y = (float)Math.Round(Convert.ToSingle(Math.Sin((angle * Math.PI) / 180f + angle0) * R), 4);
+            float x = (float)Math.Round(Convert.ToSingle(Math.Cos((angle * Math.PI) / 180f + angle0) * R), 15);
+            float y = (float)Math.Round(Convert.ToSingle(Math.Sin((angle * Math.PI) / 180f + angle0) * R), 15);
 
             return new float[] { x, y };
         }
+
+        public static bool CheckCeilPos(this float pos, float sizeOfCube) =>
+            (Math.Pow(pos - sizeOfCube, 2.0f) < 0.0001) ? true : false;
 
         public static float[] SetRadiusCamera(this float[] camera, float addRadius)
         {
             double R = Math.Sqrt(Math.Pow(camera[0], 2.0f) + Math.Pow(camera[1], 2.0f) + Math.Pow(camera[2], 2.0f));
 
+            
             if (R == 0.0f)
                 return camera;
 
-            double theta = Math.PI / 2 - Math.Asin(camera[1] / R);
-            double phi = Math.Acos(camera[2] / R);
+            double theta = Math.Atan2(Math.Sqrt(camera[0] * camera[0] + camera[1] * camera[1]), camera[2]);
+            double phi = Math.Atan2(camera[1], camera[0]);
 
             R += addRadius;
 
-            //if (theta < 0) theta = Math.PI - theta;
+            
             float x = (float)Math.Round(Convert.ToSingle(R * Math.Sin(theta) * Math.Cos(phi)), 10);
             float y = (float)Math.Round(Convert.ToSingle(R * Math.Sin(theta) * Math.Sin(phi)), 10);
             float z = (float)Math.Round(Convert.ToSingle(R * Math.Cos(theta)), 4);

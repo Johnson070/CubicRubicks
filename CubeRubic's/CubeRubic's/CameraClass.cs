@@ -13,7 +13,7 @@ namespace CubeRubic_s
         public float z = -6;
 
         public float c_x = 0;
-        public float c_y = 1;
+        public float c_y = 0;
         public float c_z = 0;
 
         public float[] coords
