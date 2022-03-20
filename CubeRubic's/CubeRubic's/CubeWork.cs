@@ -20,6 +20,9 @@ namespace CubeRubic_s
             x = 0b0110_0,
             y = 0b0111_0,
             z = 0b1000_0,
+            S = 0b1001_0,
+            M = 0b1010_0,
+            E = 0b1011_0,
 
             Up_ =       Up | reverse,
             Down_ =     Down | reverse,
@@ -30,9 +33,12 @@ namespace CubeRubic_s
             x_ = x | reverse,
             y_ = y | reverse,
             z_ = z | reverse,
+            S_ = S | reverse,
+            M_ = M | reverse,
+            E_ = E | reverse,
 
             reverse = 0b0000_1,
-            non_reverse
+            non_reverse = 0b0000_0
         }
 
         public SubCubeRubic[][][] Cube = new SubCubeRubic[][][]
@@ -227,6 +233,14 @@ namespace CubeRubic_s
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXZ(angle * (reverse ? -1 : 1));
                                 if (rt == RotateType.z)
                                     subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateYZ(angle * (!reverse ? -1 : 1));
+
+                                if (rt == RotateType.S && subCube.pos[0].CheckCeilPos(0f))
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateYZ(angle * (!reverse ? -1 : 1));
+                                if (rt == RotateType.M && subCube.pos[2].CheckCeilPos(0f))
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXY(angle * (!reverse ? -1 : 1));
+                                if (rt == RotateType.E && subCube.pos[1].CheckCeilPos(0f))
+                                    subCube.posPoint[i][j] = subCube.posPoint[i][j].RotateXZ(angle * (!reverse ? -1 : 1));
+
                             }
 
                         if (rotatePos)
@@ -236,13 +250,11 @@ namespace CubeRubic_s
                                 subCube.pos = subCube.pos.RotateXY(90f * (reverse ? -1 : 1));
                                 subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(reverse);
                             }
-
                             if (rt == RotateType.Left && subCube.pos[2].CheckCeilPos(sizeSubCube))
                             {
                                 subCube.pos = subCube.pos.RotateXY(90f * (!reverse ? -1 : 1));
                                 subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(!reverse);
                             }
-
                             if (rt == RotateType.Up && subCube.pos[1].CheckCeilPos(sizeSubCube))
                             {
                                 subCube.pos = subCube.pos.RotateXZ(90f * (reverse ? -1 : 1));
@@ -277,6 +289,21 @@ namespace CubeRubic_s
                             {
                                 subCube.pos = subCube.pos.RotateYZ(90f * (!reverse ? -1 : 1));
                                 subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(reverse);
+                            }
+                            if (rt == RotateType.S && subCube.pos[0].CheckCeilPos(0f))
+                            {
+                                subCube.pos = subCube.pos.RotateYZ(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateYZ(reverse);
+                            }
+                            if (rt == RotateType.M && subCube.pos[2].CheckCeilPos(0f))
+                            {
+                                subCube.pos = subCube.pos.RotateXY(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXY(!reverse);
+                            }
+                            if (rt == RotateType.E && subCube.pos[1].CheckCeilPos(0f))
+                            {
+                                subCube.pos = subCube.pos.RotateXZ(90f * (!reverse ? -1 : 1));
+                                subCube.ColorSidesMap = subCube.ColorSidesMap.RotateXZ(!reverse);
                             }
                         }
                     }

@@ -17,35 +17,34 @@ namespace CubeRubic_s
         {
             List<RotateType> steps = new List<RotateType>();
 
-            foreach (mask mask in find_white)
-            {
-                bool finded = CheckState(cube, mask);
+            bool white = CheckStateContinue(cube, find_white, ref steps);
+            if (!white) return steps;
 
-                if (!finded) continue;
+            if (!CheckState(cube, find_cross))
+            {
+                GetSolution(cube, Layer1_masks, ref steps, true);
+                if (!white) return steps;
+            }
+
+            return steps;
+        }
+
+        private static void GetSolution(ColorsCube[][,] cube, mask[] masks, ref List<RotateType> steps, bool mirror = false)
+        {
+            foreach (mask mask in masks)
+            {
                 bool ans = CheckSolution(cube, mask);
 
                 if (ans)
                 {
                     foreach (var step in mask.solution)
                         steps.Add(step);
-                    return steps;
+                    return;
                 }
             }
 
-            foreach (mask mask in Layer1_masks)
-            {
-                bool ans = CheckSolution(cube, mask);
-
-                if (ans)
-                {
-                    foreach (var step in mask.solution)
-                        steps.Add(step);
-                    return steps;
-                }  
-            }
-
-            if (steps.Count == 0)
-                foreach (mask mask in Layer1_masks)
+            if (mirror && steps.Count == 0)
+                foreach (mask mask in masks)
                 {
                     bool ans = CheckSolution(cube, mask, true);
 
@@ -53,12 +52,25 @@ namespace CubeRubic_s
                     {
                         foreach (var step in mask.solution.GetMirror())
                             steps.Add(step);
-                        return steps;
+                        return;
                     }
                 }
+        }
 
+        private static bool CheckStateContinue(ColorsCube[][,] cube, mask[] masks, ref List<RotateType> steps)
+        {
+            foreach (mask mask in masks)
+            {
+                bool finded = CheckState(cube, mask);
 
-            return steps;
+                if (!finded) continue;
+
+                if (mask.solution != null)
+                    foreach (var step in mask.solution)
+                        steps.Add(step);
+                return false;
+            }
+            return true;
         }
 
         private static bool CheckSolution(ColorsCube[][,] cube, mask mask, bool reverse = false)
@@ -104,11 +116,11 @@ namespace CubeRubic_s
             foreach (var byColor in mask.maskOneColor)
                 foreach (var check in byColor.points)
                     foreach (int[] coords in check.coords)
-                        if (cube[(int)check.side  >> 1][coords[0], coords[1]] == byColor.color)
+                        if (cube[(int)check.side  >> 1][coords[0], coords[1]] != byColor.color)
                         {
-                            return true;
+                            return false;
                         }
-            return false;
+            return true;
         }
         /*
          Решение первого слоя
@@ -709,6 +721,71 @@ namespace CubeRubic_s
                 new RotateType[] { RotateType.y }
             )
     };
+
+        mask find_cross =
+            new mask(
+                    new List<mask.maskByColor>()
+                    {
+                        new mask.maskByColor()
+                        {
+                            color = ColorsCube.WHITE,
+                            points = new List<mask.maskCoords>()
+                                {
+                                    new mask.maskCoords()
+                                    {
+                                        side = RotateType.Up,
+                                        coords =  new int[][]
+                                        {
+                                            new int[] { 1, 1 },
+                                            new int[] { 0, 1 },
+                                            new int[] { 2, 1 },
+                                            new int[] { 1, 2 },
+                                            new int[] { 1, 0 }
+                                        }
+                                    }
+                                }
+                        }
+                    },
+                    new List<mask.maskCoords>()
+                    {
+                        new mask.maskCoords()
+                        {
+                            side = RotateType.Front,
+                            coords = new int[][]
+                            {
+                                new int[] { 1, 1 },
+                                new int[] { 0, 1 }
+                            }
+                        },
+                        new mask.maskCoords()
+                        {
+                            side = RotateType.Left,
+                            coords = new int[][]
+                            {
+                                new int[] { 1, 1 },
+                                new int[] { 0, 1 }
+                            }
+                        },
+                        new mask.maskCoords()
+                        {
+                            side = RotateType.Back,
+                            coords = new int[][]
+                            {
+                                new int[] { 1, 1 },
+                                new int[] { 0, 1 }
+                            }
+                        },
+                        new mask.maskCoords()
+                        {
+                            side = RotateType.Right,
+                            coords = new int[][]
+                            {
+                                new int[] { 1, 1 },
+                                new int[] { 0, 1 }
+                            }
+                        },
+                    }
+                );
 
         public class mask
         {

@@ -272,7 +272,7 @@ namespace CubeRubic_s
             rotation = 10f;
             for (int i = 0; i < 50; i++)
             {
-                queue.Add((CubeWork.RotateType)rnd.Next(0, 12));
+                queue.Add((CubeWork.RotateType)rnd.Next(0, 23));
             }
             //mc.SetColorsMatrix(cube.Cube);
         }
@@ -280,6 +280,7 @@ namespace CubeRubic_s
         private void button8_Click(object sender, EventArgs e)
         {
             SolveCube cb = new SolveCube();
+
             var a = cb.SolveStep(mc.ColoredCube);
 
             foreach (var step in a)
@@ -306,6 +307,9 @@ namespace CubeRubic_s
             button9.Text = reverse ? button9.Text + '\'' : button9.Text.Replace("\'", string.Empty);
             button10.Text = reverse ? button10.Text + '\'' : button10.Text.Replace("\'", string.Empty);
             button11.Text = reverse ? button11.Text + '\'' : button11.Text.Replace("\'", string.Empty);
+            button12.Text = reverse ? button12.Text + '\'' : button12.Text.Replace("\'", string.Empty);
+            button13.Text = reverse ? button13.Text + '\'' : button13.Text.Replace("\'", string.Empty);
+            button14.Text = reverse ? button14.Text + '\'' : button14.Text.Replace("\'", string.Empty);
         }
 
         private void openGLControl1_MouseUp(object sender, MouseEventArgs e)
